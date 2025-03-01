@@ -1,0 +1,129 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "simple-import-sort"],
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "@coax/eslint-config-fe-react"
+  ],
+  "rules": {
+    "@typescript-eslint/camelcase": ["off"],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "implicit-arrow-linebreak": "off",
+    "indent": "off",
+    "func-call-spacing": "off",
+    "max-len": "warn",
+    "no-console": ["warn", { "allow": ["info", "error"] }],
+    "no-shadow": "off",
+    "no-undefined": "off",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "no-useless-escape": "warn",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "no-undef": "off",
+        "simple-import-sort/imports": [
+          "error",
+          {
+            "groups": [
+              [
+                "^react",
+                "^@?\\w"
+              ],
+              [
+                "^@/providers/*"
+              ],
+              [
+                "^@/router/*"
+              ],
+              [
+                "^@/layouts/*"
+              ],
+              [
+                "^@/pages/*"
+              ],
+              [
+                "^@/api/*"
+              ],
+              [
+                "^@/hoc"
+              ],
+              [
+                "^@/containers"
+              ],
+              [
+                "^@/components/*",
+                "components"
+              ],
+              [
+                "^@/elements/*"
+              ],
+              [
+                "^@/react-queries/*"
+              ],
+              [
+                "^@/hooks/*",
+                "hooks"
+              ],
+              [
+                "^@/helpers/*",
+                "helpers"
+              ],
+              [
+                "^@/constants/*",
+                "constants"
+              ],
+              [
+                ".schema"
+              ],
+              [
+                "^@/types/*",
+                ".types",
+                "schema"
+              ],
+              [
+                "^@/assets/*"
+              ],
+              [
+                "^\\.\\.(?!/?$)",
+                "^\\.\\./?$"
+              ],
+              [
+                "^\\./(?=.*/)(?!/?$)",
+                "^\\.(?!/?$)",
+                "^\\./?$"
+              ],
+              [
+                "styles.scss"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
