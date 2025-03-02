@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,33 +9,56 @@ import { Label } from "@/components/ui/label";
 import LoginPhoto from "@/assets/images/login-photo.jpg";
 import Image from "next/image";
 import Link from "next/link";
+import { ICreateUserInput } from "@/types/user.types";
+import { useMutation } from "@apollo/client";
+import { SIGNUP } from "@/graphql/mutations";
 
-export default function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+export default function SignUpForm({ className, ...props }: React.ComponentProps<"div">) {
+  const { register, handleSubmit } = useForm<ICreateUserInput>();
+  const [ handleSignUn, { loading, error }] = useMutation(SIGNUP);
+
+  const onSubmit = (data: ICreateUserInput) => {
+    handleSignUn({ variables: {
+      ...data,
+      age: Number(data.age)
+    } }).then((res) => {
+      console.log('res', res)
+    })
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+        {loading ? "Loading..." :<CardContent className="grid p-0 md:grid-cols-2">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-balance text-muted-foreground">Login to your Book Me account</p>
+                <h1 className="text-2xl font-bold">Welcome!</h1>
+                <p className="text-balance text-muted-foreground">Register account</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input {...register('email')} id="email" type="email" placeholder="m@example.com" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="first_name">First Name</Label>
+                <Input {...register('first_name')} id="first_name" type="text" placeholder="Enter your name" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="last_name">Last Name</Label>
+                <Input {...register('last_name')} id="last_name" type="text" placeholder="Enter your last name" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="age">Age</Label>
+                <Input {...register('age')} id="age" type="text" placeholder="Enter your age" required />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a href="#" className="ml-auto text-sm underline-offset-2 hover:underline">
-                    Forgot your password?
-                  </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input {...register('password')} id="password" type="password" placeholder="Your Password" required />
               </div>
               <Button type="submit" className="w-full">
-                Login
+                Sign Up
               </Button>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
@@ -67,9 +93,9 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/auth/sign-up" className="underline underline-offset-4">
-                  Sign up
+                Have you already have the account?{" "}
+                <Link href="/auth/sign-in" className="underline underline-offset-4">
+                  Sign in
                 </Link>
               </div>
             </div>
@@ -81,7 +107,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
               className="absolute inset-0 h-full w-full object-cover brightness-[0.7] dark:grayscale"
             />
           </div>
-        </CardContent>
+        </CardContent>}
       </Card>
     </div>
   );

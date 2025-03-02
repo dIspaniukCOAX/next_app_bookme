@@ -3,13 +3,23 @@
 import client from "@/lib/apollo-client";
 import { ApolloProvider } from "@apollo/client";
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
+import Cookies from "js-cookie";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export const AppLayout = ({ children }: LayoutProps) => {
+  const [isAuth, setIsAuth] = React.useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+    if (token) {
+      setIsAuth(true);
+    }
+  }, []);
+
   return (
     <ApolloProvider client={client}>
       <div className="flex flex-col h-screen">

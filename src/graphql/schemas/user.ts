@@ -11,12 +11,21 @@ export const userTypeDefs = gql`
     updated_at: String!
   }
 
+  type AuthPayload {
+    user: User!
+    accessToken: String!
+    refreshToken: String!
+  }
+
   type Query {
     users: [User!]!
     user(id: String!): User
+    me: User
   }
 
   type Mutation {
-    createUser(email: String!, password: String!, first_name: String!, last_name: String!, age: Int!): User!
+    signup(email: String!, password: String!, first_name: String!, last_name: String!, age: Int!): AuthPayload!
+    signin(email: String!, password: String!): AuthPayload!
+    logout: Boolean!
   }
 `;
