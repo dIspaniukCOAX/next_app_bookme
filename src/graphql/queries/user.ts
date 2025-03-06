@@ -26,3 +26,17 @@ export const GET_USER = gql`
     }
   }
 `;
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      email
+      first_name
+      last_name
+      age
+      created_at
+      updated_at
+    }
+  }
+`;

@@ -1,29 +1,32 @@
 import { db } from "@/lib/db";
-import { generateTokens } from "@/lib/jwt";
+import { decrypt, generateAccessToken } from "@/lib/jwt";
 import bcrypt from "bcryptjs";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export const userResolvers = {
   Query: {
     users: async () => await db.user.findMany(),
-    user: async (_: any, { id }: { id: string }) => await db.user.findUnique({ where: { id } }),
+    user: async (_: any, { id }: { id: string | undefined }) => await db.user.findUnique({ where: { id } }),
     me: async (_: any, __: any, { req }: { req: NextRequest }) => {
-      const token = req.cookies.get("token")?.value;
+      const token = req.cookies.get("access_token")?.value;
+      console.log('token :>> ', token);
       if (!token) {
         throw new Error("Not authenticated");
       }
 
       try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-        const user = await db.user.findUnique({ where: { id: decoded.userId } });
+        const decoded = await decrypt(token);
+        if (!decoded?.userId) {
+          throw new Error("Token not found");
+        }
+
+        const user = await db.user.findUnique({ where: { id: decoded?.userId as string } });
         if (!user) {
           throw new Error("User not found");
         }
         return user;
       } catch (err) {
+        console.log('err', err)
         throw new Error("Invalid token");
       }
     }
@@ -45,12 +48,13 @@ export const userResolvers = {
         data: { email, password: hashedPassword, first_name, last_name, age }
       });
 
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
-      res.cookies.set("token", token, {
+      const token = (await generateAccessToken(user.id)) || "";
+
+      res.cookies.set("access_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 60 * 60 * 1000,
+        maxAge: 60 * 60 * 1000, // 1 hour
         path: "/"
       });
 
@@ -59,6 +63,7 @@ export const userResolvers = {
     signin: async (
       _: any,
       { email, password }: { email: string; password: string },
+      { res }: { res: NextResponse }
     ) => {
       if (!email || !password) {
         throw new Error("Email and password are required");
@@ -69,15 +74,20 @@ export const userResolvers = {
         throw new Error("Invalid email or password");
       }
 
-      const {
-        accessToken,
-        refreshToken
-      } = generateTokens({ userId: user.id });
+      const token = (await generateAccessToken(user.id)) || "";
 
-      return { user, accessToken, refreshToken };
+      res.cookies.set("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 1000, // 1 hour
+        path: "/"
+      });
+
+      return { user, accessToken: token };
     },
     logout: async (_: any, __: any, { res }: { res: NextResponse }) => {
-      res.cookies.set("token", "", { maxAge: 0, path: "/" }); // Delete cookie
+      res.cookies.set("access_token", "", { maxAge: 0, path: "/" }); // Delete cookie
       return true;
     }
   }

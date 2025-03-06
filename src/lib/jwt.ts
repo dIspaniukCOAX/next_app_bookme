@@ -1,31 +1,31 @@
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
+import { NextRequest } from "next/server";
 
-const ACCESS_SECRET = process.env.ACCESS_SECRET || 'access-secret-key';
-const REFRESH_SECRET = process.env.REFRESH_SECRET || 'refresh-secret-key';
+const JWT_SECRET = process.env.AUTH_SECRET;
+const key = new TextEncoder().encode(JWT_SECRET);
 
-export interface TokenPayload {
-    userId: string;
+export const generateAccessToken = (userId: string) => {
+  if (JWT_SECRET) {
+    const tokenPayload = {
+      userId,
+      createdAt: Date.now(),
+    };
+
+    return new SignJWT(tokenPayload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1hr')
+    .sign(key);
   }
-
-export const generateTokens = (payload: TokenPayload) => {
-  const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
-
-  return { accessToken, refreshToken };
 };
 
-export const verifyAccessToken = (token: string) => {
+export async function decrypt(session: string | undefined = '') {
   try {
-    return jwt.verify(token, ACCESS_SECRET);
+    const { payload } = await jwtVerify(session, key, {
+      algorithms: ['HS256'],
+    });
+    return payload;
   } catch (error) {
     return null;
   }
-};
-
-export const verifyRefreshToken = (token: string) => {
-  try {
-    return jwt.verify(token, REFRESH_SECRET);
-  } catch (error) {
-    return null;
-  }
-};
+}

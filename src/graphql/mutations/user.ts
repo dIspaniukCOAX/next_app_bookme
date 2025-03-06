@@ -29,7 +29,6 @@ export const SIGNIN = gql`
         updated_at
       }
       accessToken
-      refreshToken
     }
   }
 `;
