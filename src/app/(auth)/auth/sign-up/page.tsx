@@ -22,7 +22,6 @@ export default function SignUpForm({ className, ...props }: React.ComponentProps
       ...data,
       age: Number(data.age)
     } }).then((res) => {
-      console.log('res', res)
     })
   }
   return (

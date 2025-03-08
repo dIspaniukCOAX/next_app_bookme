@@ -14,12 +14,19 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  password   String
-  first_name String
-  last_name  String
-  age        Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id                     String    @id @default(cuid())
+  first_name             String
+  last_name              String
+  age                    Int
+  email                  String    @unique
+  password               String
+  reset_token            String?
+  reset_token_expiry     DateTime?
+  two_factor_enabled     Boolean   @default(false)
+  two_factor_secret      String    @default("")
+  temp_two_factor_secret String    @default("")
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  @@index([email])
 }

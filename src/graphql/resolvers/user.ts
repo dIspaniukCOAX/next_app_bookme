@@ -9,7 +9,6 @@ export const userResolvers = {
     user: async (_: any, { id }: { id: string | undefined }) => await db.user.findUnique({ where: { id } }),
     me: async (_: any, __: any, { req }: { req: NextRequest }) => {
       const token = req.cookies.get("access_token")?.value;
-      console.log('token :>> ', token);
       if (!token) {
         throw new Error("Not authenticated");
       }
@@ -26,7 +25,6 @@ export const userResolvers = {
         }
         return user;
       } catch (err) {
-        console.log('err', err)
         throw new Error("Invalid token");
       }
     }
