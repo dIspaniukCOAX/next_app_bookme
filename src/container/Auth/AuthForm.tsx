@@ -5,37 +5,39 @@ import RegisterComponent from "./RegisterComponent";
 import ForgotPassword from "./ForgotPassword";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AuthGuard from "./AuthGuard";
 import { ICreateUserInput } from "@/types/user.types";
 export default function AuthForm({ tokenId }: { tokenId?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [forgotPasswordSuccess, setForgotPasswordSuccess] =
-    React.useState(false);
-  const handleLogin = async (userData: {
-    email: string;
-    password: string;
-    twoFactorCode?: string;
-  }) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
+
+  const handleLogin = async (userData: { email: string; password: string; twoFactorCode?: string }) => {
     setErrorMessage("");
     setLoading(true);
     const result = await signIn("credentials", {
       redirect: false,
       email: userData.email,
       password: userData.password,
-      token: userData.twoFactorCode,
+      token: userData.twoFactorCode
     });
     setLoading(false);
     if (result?.ok) {
       router.push("/");
     }
     if (result?.error) {
-      setErrorMessage(result.error);
+      if (result.error === "2FA token required") {
+        setTwoFactorRequired(true);
+      } else {
+        setErrorMessage(result.error);
+      }
     }
   };
+
   const handleRegister = async (userData: ICreateUserInput) => {
     setErrorMessage("");
     setLoading(true);
@@ -47,15 +49,15 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
         first_name: userData.first_name,
         last_name: userData.last_name,
         age: userData.age,
-        password: userData.password,
-      }),
+        password: userData.password
+      })
     });
     setLoading(false);
     if (response.ok) {
       const result = await signIn("credentials", {
         redirect: false,
         email: userData.email,
-        password: userData.password,
+        password: userData.password
       });
       if (result?.ok) {
         router.push("/");
@@ -78,7 +80,7 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
     const response = await fetch("/api/auth/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email })
     });
     setLoading(false);
     if (response.ok) {
@@ -99,18 +101,10 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
     <>
       <AuthGuard authRequired={false} redirectTo="/">
         {pathname.includes("/auth/signin") && (
-          <LoginComponent
-            loading={loading}
-            errorMessage={errorMessage}
-            onSubmit={handleLogin}
-          />
+          <LoginComponent loading={loading} errorMessage={errorMessage} onSubmit={handleLogin} twoFactorRequired={twoFactorRequired} />
         )}
         {pathname.includes("/auth/signup") && (
-          <RegisterComponent
-            errorMessage={errorMessage}
-            loading={loading}
-            onSubmit={handleRegister}
-          />
+          <RegisterComponent errorMessage={errorMessage} loading={loading} onSubmit={handleRegister} />
         )}
         {pathname.includes("/auth/forgot-password") && (
           <ForgotPassword

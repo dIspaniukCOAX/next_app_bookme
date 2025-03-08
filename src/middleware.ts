@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt'
 import { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const session = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+  const session = await getToken({ req: request, secret: process.env.AUTH_SECRET })
 
   const authRoutes = ['/auth/signin', '/auth/signup', '/auth/forgot-password']
   const isAuthRoute = authRoutes.some(route => request.nextUrl.pathname.startsWith(route))

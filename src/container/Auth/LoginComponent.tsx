@@ -10,17 +10,19 @@ import Link from "next/link";
 import { isEntryEmpty, validateEmail } from "@/utils/general";
 
 interface LoginComponentProps {
-  onSubmit: (userData: { email: string; password: string }) => void;
+  onSubmit: (userData: { email: string; password: string; twoFactorCode?: string }) => void;
+  twoFactorRequired: boolean;
   errorMessage: string;
   loading: boolean;
 }
 
-const LoginComponent: React.FC<LoginComponentProps> = ({ onSubmit, errorMessage, loading }) => {
+const LoginComponent: React.FC<LoginComponentProps> = ({ onSubmit, errorMessage, loading, twoFactorRequired }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
 
   const onSubmitLoginDetails = () => {
     if (isEntryEmpty(email)) {
@@ -35,7 +37,7 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ onSubmit, errorMessage,
       setEmailError("Invalid email");
       return;
     }
-    onSubmit({ email, password });
+    onSubmit({ email, password, twoFactorCode });
   };
 
   return (
@@ -82,12 +84,29 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ onSubmit, errorMessage,
           </div>
           {passwordError && <p className="text-red-500 text-xs mt-1">{passwordError}</p>}
         </div>
+        {twoFactorRequired && (
+          <div className="mb-4">
+            <Label htmlFor="twoFactorCode">2FA Code</Label>
+            <Input
+              id="twoFactorCode"
+              type="text"
+              placeholder="2FA Code"
+              value={twoFactorCode}
+              onChange={(e) => setTwoFactorCode(e.target.value)}
+            />
+          </div>
+        )}
         <div className="text-right text-sm mb-4">
-          <Link href="/auth/forgot-password" className="text-blue-600 hover:underline">Forgot password?</Link>
+          <Link href="/auth/forgot-password" className="text-blue-600 hover:underline">
+            Forgot password?
+          </Link>
         </div>
         <div className="flex justify-between items-center text-sm">
           <p>
-            No account yet? <Link href="/auth/signup" className="text-blue-600 hover:underline">Register here</Link>
+            No account yet?{" "}
+            <Link href="/auth/signup" className="text-blue-600 hover:underline">
+              Register here
+            </Link>
           </p>
           <Button onClick={onSubmitLoginDetails} disabled={loading} className="w-28">
             {loading ? "Loading..." : "Login"}

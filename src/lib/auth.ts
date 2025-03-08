@@ -1,3 +1,4 @@
+import speakeasy from 'speakeasy';
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
@@ -10,6 +11,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        token: { label: "2FA Token", type: "text" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -28,6 +30,22 @@ export const authOptions: NextAuthOptions = {
 
         if (!isValidPassword) {
           throw new Error("Invalid password");
+        }
+
+        if (user.two_factor_enabled) {
+          if (!credentials.token) {
+            throw new Error("2FA token required");
+          }
+
+          const isTokenValid = speakeasy.totp.verify({
+            secret: user.two_factor_secret,
+            encoding: "base32",
+            token: credentials.token,
+          });
+
+          if (!isTokenValid) {
+            throw new Error("Invalid 2FA token");
+          }
         }
 
         return user;
