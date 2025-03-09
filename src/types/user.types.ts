@@ -8,15 +8,15 @@ export interface IUser {
   updated_at: string;
 }
 
-export interface CreateUserInput {
+export interface ICreateUserInput {
   email: string;
   password: string;
   first_name: string;
   last_name: string;
-  age?: number;
+  age: number;
 }
 
-export interface UpdateUserInput {
+export interface IUpdateUserInput {
   first_name?: string;
   last_name?: string;
   age?: number;
