@@ -62,6 +62,7 @@
     "@storybook/experimental-nextjs-vite": "^8.6.4",
     "@storybook/react": "^8.6.4",
     "@storybook/test": "^8.6.4",
+    "@storybook/test-runner": "^0.22.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",

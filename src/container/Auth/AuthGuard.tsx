@@ -2,7 +2,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Loader from "../../components/Loader";
+import Loader from "../../components/Loader/Loader";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,11 +10,7 @@ interface AuthGuardProps {
   redirectTo: string;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({
-  children,
-  authRequired,
-  redirectTo,
-}) => {
+const AuthGuard: React.FC<AuthGuardProps> = ({ children, authRequired, redirectTo }) => {
   const { status } = useSession();
   const router = useRouter();
 
@@ -29,9 +25,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   }, [status, router, authRequired, redirectTo]);
 
   if (status === "loading") {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (authRequired && status === "unauthenticated") {

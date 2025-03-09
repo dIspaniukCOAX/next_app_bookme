@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import HomeCard from '../HomeCard';
-import { DialogMeeting } from '../DialogMeeting/DialogMeeting';
-import { IMeeting } from '@/types/meeting/meeting.type';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import HomeCard from "../HomeCard/HomeCard";
+import { DialogMeeting } from "../DialogMeeting/DialogMeeting";
+import { IMeeting } from "@/types/meeting/meeting.type";
+import { useRouter } from "next/navigation";
 
 const MeetingTypeList = () => {
-  const [ openMeetingDialog, setOpenMeetingDialog ] = useState(false);
+  const [openMeetingDialog, setOpenMeetingDialog] = useState(false);
   const router = useRouter();
 
   const handleMeetingDialog = (meeting: IMeeting) => {
     const query = new URLSearchParams({
       channelName: meeting.channelName,
       userName: meeting.username
-    }).toString()
-    router.push('/meeting?' + query)
-  }
+    }).toString();
+    router.push("/meeting?" + query);
+  };
 
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
