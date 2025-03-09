@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { disable2FA, enable2FA, verify2FA } from "@/lib/api";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { toast } from "sonner";
 
 const ProfileContainer = () => {
