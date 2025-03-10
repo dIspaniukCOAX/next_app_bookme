@@ -12,7 +12,22 @@ export const metadata: Metadata = {
   description: "Video calling App",
   icons: {
     icon: "/icons/logo.svg"
-  }
+  },
+  openGraph: {
+    title: "Book Me - Video Calling App",
+    description: "Connect with teachers easily via video calls.",
+    url: "https://d6e2-157-245-67-12.ngrok-free.app/",
+    siteName: "Book Me",
+    images: [
+      {
+        url: "/images/login-photo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Book Me Preview",
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

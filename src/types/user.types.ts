@@ -4,8 +4,15 @@ export interface IUser {
   first_name?: string | null;
   last_name?: string | null;
   age?: number | null;
+  two_factor_enabled: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface IUserLogin {
+  email: string;
+  password: string;
+  twoFactorCode?: string;
 }
 
 export interface ICreateUserInput {

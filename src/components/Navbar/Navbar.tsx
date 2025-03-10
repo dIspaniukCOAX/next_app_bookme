@@ -6,10 +6,11 @@ import MobileNav from "../MobileNav/MobileNav";
 import { Button } from "../ui/button";
 import { useQuery } from "@apollo/client";
 import { GET_ME } from "@/graphql/queries";
-import { Loader } from "lucide-react";
+import { Loader, LogOut } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import PersonAvatar from "../PersonalAvatar/PersonAvatar";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   const { data, loading, error } = useQuery(GET_ME);
@@ -18,7 +19,13 @@ const Navbar = () => {
     if (error) {
       toast.error(error.message);
     }
-  }, [error])
+  }, [error]);
+
+  useEffect(() => {
+    if (data) {
+      localStorage.setItem("user", JSON.stringify(data?.me));
+    }
+  }, [data]);
 
   return (
     <nav className="flex justify-between sticky top-0 left-0 z-50 w-full bg-[#383838] px-6 py-4 lg:px-10">
@@ -30,7 +37,10 @@ const Navbar = () => {
         {loading ? (
           <Loader />
         ) : data ? (
-          <PersonAvatar userData={data.me} />
+          <div className="flex items-center gap-3 cursor-pointer">
+            <PersonAvatar userData={data.me} />
+            <LogOut color="#fff" onClick={() => signOut()} />
+          </div>
         ) : (
           <Button>
             <Link href="/auth/sign-in">Login</Link>

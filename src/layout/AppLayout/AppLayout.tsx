@@ -21,7 +21,7 @@ export const AppLayout = ({ children }: LayoutProps) => {
           <Sidebar />
 
           <section className="flex h-[calc(100svh-72px)] flex-1 flex-col px-6 pb-6 max-md:pb-14 sm:px-14 bg-[#3d3d3d]">
-            <div className="w-full">{children}</div>
+            <div className="w-full h-full">{children}</div>
           </section>
         </div>
       </ApolloProvider>
