@@ -5,14 +5,14 @@ import { NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request, secret: process.env.AUTH_SECRET })
 
-  const authRoutes = ['/auth/signin', '/auth/signup', '/auth/forgot-password']
+  const authRoutes = ['/auth/signin', '/auth/signup']
   const isAuthRoute = authRoutes.some(route => request.nextUrl.pathname.startsWith(route))
   if (session && isAuthRoute) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
   if (!session && !isAuthRoute && request.nextUrl.pathname !== '/auth/signup') {
-    return NextResponse.redirect(new URL('/auth/signup', request.url))
+    return NextResponse.redirect(new URL('/auth/signin', request.url))
   }
 
   return NextResponse.next()

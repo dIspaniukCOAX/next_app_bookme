@@ -1,14 +1,10 @@
-import Image from 'next/image';
+import Image from "next/image";
+import LoaderSVG from "../../assets/icons/loading-circle.svg";
 
 const Loader = () => {
   return (
-    <div className="flex-center h-screen w-full">
-      <Image
-        src="/icons/loading-circle.svg"
-        alt="Loading..."
-        width={50}
-        height={50}
-      />
+    <div className="flex items-center justify-center h-screen w-full bg-transparent">
+      <Image src={LoaderSVG} alt="Loading..." width={50} height={50} />
     </div>
   );
 };

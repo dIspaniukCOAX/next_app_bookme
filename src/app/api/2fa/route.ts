@@ -47,9 +47,11 @@ export async function POST(request: Request) {
   try {
     const { token } = await request.json();
     const session: any = await getServerSession(authOptions);
+
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    
     const user: any = await db.user.findUnique({
       where: {
         id: session?.user?.id,

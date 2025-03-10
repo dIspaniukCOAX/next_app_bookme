@@ -37,11 +37,16 @@ export const authOptions: NextAuthOptions = {
             throw new Error("2FA token required");
           }
 
+          console.log('credentials.token', credentials.token)
+          console.log('user.two_factor_secret', user.two_factor_secret)
+
           const isTokenValid = speakeasy.totp.verify({
             secret: user.two_factor_secret,
             encoding: "base32",
             token: credentials.token,
           });
+
+          console.log('isTokenValid', isTokenValid)
 
           if (!isTokenValid) {
             throw new Error("Invalid 2FA token");

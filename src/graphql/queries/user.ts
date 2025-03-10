@@ -7,6 +7,7 @@ export const GET_USERS = gql`
       email
       first_name
       last_name
+      two_factor_enabled
       age
       created_at
     }
@@ -20,6 +21,7 @@ export const GET_USER = gql`
       email
       first_name
       last_name
+      two_factor_enabled
       age
       created_at
       updated_at
@@ -33,6 +35,7 @@ export const GET_ME = gql`
       id
       email
       first_name
+      two_factor_enabled
       last_name
       age
       created_at

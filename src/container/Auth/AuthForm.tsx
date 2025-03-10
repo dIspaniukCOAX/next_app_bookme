@@ -2,7 +2,6 @@
 import { usePathname } from "next/navigation";
 import LoginComponent from "./LoginComponent";
 import RegisterComponent from "./RegisterComponent";
-import ForgotPassword from "./ForgotPassword";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [twoFactorRequired, setTwoFactorRequired] = useState(false);
-  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
 
   const handleLogin = async (userData: { email: string; password: string; twoFactorCode?: string }) => {
     setErrorMessage("");
@@ -23,7 +21,7 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
       redirect: false,
       email: userData.email,
       password: userData.password,
-      token: userData.twoFactorCode
+      token: userData.twoFactorCode ? userData.twoFactorCode : ""
     });
     setLoading(false);
     if (result?.ok) {
@@ -73,24 +71,6 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
     }
   };
 
-  const handleForgotPassword = async (email: string) => {
-    setErrorMessage("");
-    setForgotPasswordSuccess(false);
-    setLoading(true);
-    const response = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-    setLoading(false);
-    if (response.ok) {
-      setForgotPasswordSuccess(true);
-    } else {
-      const data = await response.json();
-      setErrorMessage(data.error);
-    }
-  };
-
   useEffect(() => {
     if (pathname.includes("/reset-password") && !tokenId?.length) {
       router.push("/signin");
@@ -101,18 +81,15 @@ export default function AuthForm({ tokenId }: { tokenId?: string }) {
     <>
       <AuthGuard authRequired={false} redirectTo="/">
         {pathname.includes("/auth/signin") && (
-          <LoginComponent loading={loading} errorMessage={errorMessage} onSubmit={handleLogin} twoFactorRequired={twoFactorRequired} />
+          <LoginComponent
+            loading={loading}
+            errorMessage={errorMessage}
+            onSubmit={handleLogin}
+            twoFactorRequired={twoFactorRequired}
+          />
         )}
         {pathname.includes("/auth/signup") && (
           <RegisterComponent errorMessage={errorMessage} loading={loading} onSubmit={handleRegister} />
-        )}
-        {pathname.includes("/auth/forgot-password") && (
-          <ForgotPassword
-            loading={loading}
-            forgotPasswordSuccess={forgotPasswordSuccess}
-            errorMessage={errorMessage}
-            onSubmit={handleForgotPassword}
-          />
         )}
       </AuthGuard>
     </>

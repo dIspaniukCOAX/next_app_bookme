@@ -2,9 +2,7 @@ import { userResolvers } from "./user";
 
 export const resolvers = {
   Query: {
-    ...userResolvers.Query,
+    ...userResolvers.Query
   },
-  Mutation: {
-    ...userResolvers.Mutation,
-  },
+  Mutation: {}
 };

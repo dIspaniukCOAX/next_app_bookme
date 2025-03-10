@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { disable2FA, enable2FA, verify2FA } from "@/lib/api";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { toast } from "sonner";
+import { AppLayout } from "@/layout";
+import { IUser } from "@/types/user.types";
 
 const ProfileContainer = () => {
   const session = useSession();
@@ -18,11 +20,15 @@ const ProfileContainer = () => {
   const [disable2FaModal, setDisable2FaModal] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [verifyError, setVerifyError] = useState<string>("");
-  const user: any = session.data?.user;
+  const user: IUser = useMemo(() => {
+    console.log('localStorage.getItem("user")', localStorage.getItem("user"))
+    return localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") || "") : null
+  }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
-      setTwoFactorEnabled(!!user.twoFactorEnabled);
+      console.log('user.two_factor_enabled', user)
+      setTwoFactorEnabled(!!user.two_factor_enabled);
     }
   }, [user]);
 
@@ -72,7 +78,7 @@ const ProfileContainer = () => {
   }, [snackbarMessage]);
 
   return (
-    <>
+    <AppLayout>
       <ConfirmationDialog
         title="Disable 2FA"
         description="Are you sure you want to disable 2FA?"
@@ -84,8 +90,8 @@ const ProfileContainer = () => {
         }}
         onConfirm={onDisable2FA}
       />
-      <div className="flex flex-col items-center justify-center">
-        <div className="bg-white p-6 shadow-xl w-96 min-h-[50vh] flex flex-col gap-4">
+      <div className="flex flex-col items-center justify-center h-full w-full">
+        <div className="p-6 shadow-xl bg-[#ccc] rounded-[12px] w-full flex flex-col gap-4">
           <h2 className="text-xl font-semibold">Profile</h2>
           <Label htmlFor="email">Email</Label>
           <Input value={user?.email || " "} disabled className="mb-4" />
@@ -130,7 +136,7 @@ const ProfileContainer = () => {
           )}
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 };
 
